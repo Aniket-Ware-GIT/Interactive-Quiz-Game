@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Challenge</title>
+    <style>
+        body{
+            background-image:url("background.jpeg") ;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            background-size:cover;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .quiz-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        .quiz-header {
+            margin-bottom: 20px;
+        }
+        .quiz-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .question {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        .options button {
+            display: block;
+            width: 100%;
+            background: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .options button:hover {
+            background: #0056b3;
+        }
+        .feedback {
+            margin-top: 20px;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .score {
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+        body, .quiz-container {
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .quiz-container {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .progress-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #4caf50 0%,
+                #4caf50 var(--percentage, 0%),
+                #ccc var(--percentage, 0%) 100%
+            );
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            color: #333;
+            font-weight: bold;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .progress-circle .percentage-text {
+            font-size: 1.4em;
+            color: #ff66cc; /* Mixture of pink and blue */
+            background: linear-gradient(135deg, #ff66cc, #33ccff);
+            -webkit-background-clip: text;
+            background-clip: text; /* Standard */
+            -webkit-text-fill-color: transparent; /* Required for WebKit */
+            color: transparent;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .question-number {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .question {
+            font-weight: bold;
+            font-size: 1.4em;
+        }
+
+        .next-button {
+            background: linear-gradient(135deg, #711044, #017fd2); /* Deep Pink to Blue */
+            color: white;
+            font-size: 1.2em;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 10px 50px rgba(245, 0, 240, 0.3); /* Shadow effect */
+            transition: all 0.3s ease;
+        }
+
+.next-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px rgba(245, 0, 240, 0.3); /* Increased shadow on hover */
+}
+
+.next-button:disabled {
+    background-color: #074575;
+    cursor: not-allowed;
+}
+
+.score {
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+.percentage {
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+.confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw; /* Limit the container width to 100% of viewport width */
+    height: 100vh; /* Limit the container height to 100% of viewport height */
+    pointer-events: none;
+    display: none;
+    overflow: hidden; /* Prevent confetti from overflowing outside the screen */
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #FF5733;
+    animation: confettiAnimation 2s linear infinite;
+}
+
+@keyframes confettiAnimation {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(0.5);
+    }
+    50% {
+        transform: translateY(50vh) rotate(180deg) scale(1.2);
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg) scale(1);
+    }
+}
+
+/* Progress Bar Styles */
+.progress-bar-container {
+    width: 100%;
+    height: 10px;
+    background-color: #ccc;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #4caf50;
+    border-radius: 5px;
+    transition: width 0.3s ease;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+    .quiz-container {
+        padding: 10px;
+    }
+
+    .next-button {
+        width: 100%;
+        font-size: 1em;
+        padding: 10px;
+    }
+
+    .question {
+        font-size: 1.2em;
+    }
+
+    .options button {
+        width: 100%;
+        font-size: 1em;
+        padding: 12px;
+    }
+}
+
+/* Styling for option buttons */
+.options button {
+    background-color: #f4f4f9; /* Light background color */
+    color: #333; /* Text color */
+    font-size: 1.2em;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.3s ease; /* Smooth color change */
+}
+
+.options button:hover {
+    background-color: #4caf50; /* Change to a green background on hover */
+    color: white;
+}
+
+.options button:active {
+    background-color: #017fd2; /* Change to a blue background when clicked */
+}
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>JavaScript Challenge</h1>
+        </div>
+        <div id="quiz-content">
+            <p class="question-number">Question <span id="question-number"></span> out of <span id="total-questions"></span></p>
+            <p class="question">Loading question...</p>
+            <div class="options">
+                <!-- Options will be dynamically injected here -->
+            </div>
+            <p class="feedback"></p>
+            <p class="score">Score: 0</p>
+            <button class="next-button" id="next-button" onclick="nextQuestion()" disabled aria-label="Next question">Next</button>
+        </div>
+        <div class="confetti-container" id="confetti-container"></div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar-container" id="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+       const quizData = [
+    {
+        question: "What is the result of the following code: console.log([] == []);?",
+        options: ["true", "false", "undefined", "NaN"],
+        correctAnswer: "false",
+        feedback: "In JavaScript, arrays are reference types, so comparing two different arrays using '==' returns false because they are not the same reference."
+    },
+    {
+        question: "What will be the value of `x` after the following code is executed: var x = 0; if (x == 0) { let x = 1; } console.log(x);?",
+        options: ["0", "1", "undefined", "ReferenceError"],
+        correctAnswer: "0",
+        feedback: "The `let` inside the block creates a new block-scoped variable `x`, leaving the outer `x` unaffected. Therefore, the result is 0."
+    },
+    {
+        question: "Which of the following methods is used to define a getter in a JavaScript object?",
+        options: [
+            "function property() {}",
+            "set property() {}",
+            "get set() {}",
+            "get property() {}"
+        ],
+        correctAnswer: "get property() {}",
+        feedback: "In JavaScript, you can define a getter for an object property using the `get` keyword followed by the property name and a function."
+    },
+    {
+        question: "What will the following code output: console.log(typeof NaN);?",
+        options: [ "'NaN'", "'undefined'","'number'", "'object'"],
+        correctAnswer: "'number'",
+        feedback: "In JavaScript, `NaN` (Not-a-Number) is of type 'number'. This is a known quirk in JavaScript's type system."
+    },
+    {
+        question: "What is the purpose of the `bind()` method in JavaScript?",
+        options: [
+            "It binds an event listener to an element",
+            "It creates a new function that, when called, has its `this` set to the provided value",
+            "It is used to create a new object",
+            "It sets a global variable"
+        ],
+        correctAnswer: "It creates a new function that, when called, has its `this` set to the provided value",
+        feedback: "The `bind()` method creates a new function that has `this` set to the provided value and can be called with new arguments."
+    },
+    {
+        question: "Which of the following will throw an error in JavaScript?",
+        options: [
+            "Function.prototype.call()",    
+            "Object.create(null)",
+            "new Date()",
+            "new Object()"
+        ],
+        correctAnswer: "Function.prototype.call()",
+        feedback: "Calling `Function.prototype.call()` without a function as the context will throw an error. It must be called on a function object."
+    },
+    {
+        question: "How does JavaScript handle variable hoisting for `let` and `const` declarations?",
+        options: [
+            "Variables declared with `let` and `const` are hoisted and initialized to `undefined`",
+            "Variables declared with `let` and `const` are not hoisted",
+            "Variables declared with `let` and `const` are hoisted but remain in a 'temporal dead zone' until the declaration is encountered",
+            "Variables declared with `let` and `const` are hoisted and accessible before their declaration"
+        ],
+        correctAnswer: "Variables declared with `let` and `const` are hoisted but remain in a 'temporal dead zone' until the declaration is encountered",
+        feedback: "In JavaScript, `let` and `const` declarations are hoisted to the top of their scope, but they remain uninitialized until their actual declaration, resulting in a 'temporal dead zone'."
+    },
+    {
+        question: "What will the following code output: console.log([2] == [2]);?",
+        options: ["true", "undefined", "ReferenceError","false"],
+        correctAnswer: "false",
+        feedback: "Even though the arrays appear to have the same content, they are reference types, and comparing them with '==' checks for reference equality, not value equality."
+    },
+    {
+        question: "What does the `Promise.all()` method do in JavaScript?",
+        options: [
+            "It resolves when all the promises in the array resolve",
+            "It returns the first resolved promise from the array",
+            "It cancels the first promise that fails in the array",
+            "It only works with synchronous functions"
+        ],
+        correctAnswer: "It resolves when all the promises in the array resolve",
+        feedback: "`Promise.all()` accepts an array of promises and resolves when all of the promises are resolved, returning a new promise with the results."
+    },
+    {
+        question: "What is the output of the following code: (function() { var a = b = 3; })(); console.log(b);?",
+        options: [ "undefined", "ReferenceError","3", "null"],
+        correctAnswer: "3",
+        feedback: "In this code, `b` is assigned a value in the global scope (without `var`), so it becomes a global variable, and the value 3 is logged."
+    }
+];
+
+
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let totalQuestions = quizData.length;
+
+        const quizContent = document.getElementById("quiz-content");
+        const questionElement = document.querySelector(".question");
+        const optionsElement = document.querySelector(".options");
+        const feedbackElement = document.querySelector(".feedback");
+        const scoreElement = document.querySelector(".score");
+        const questionNumberElement = document.getElementById("question-number");
+        const totalQuestionsElement = document.getElementById("total-questions");
+        const nextButton = document.getElementById("next-button");
+        const confettiContainer = document.getElementById("confetti-container");
+        const progressBarContainer = document.getElementById("progress-bar-container");
+
+        totalQuestionsElement.textContent = totalQuestions;
+
+        const confettiColors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A6", "#FFDA33", "#33FFF5"];
+
+        function createConfetti() {
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement("div");
+                confetti.classList.add("confetti");
+                confetti.style.left = Math.random() * 100 + "vw";
+                confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                confetti.style.animationDuration = Math.random() * 2 + 1 + "s";
+                confettiContainer.appendChild(confetti);
+
+                setTimeout(() => confetti.remove(), 2000); // Remove after animation
+            }
+            confettiContainer.style.display = "block"; // Show confetti when triggered
+        }
+
+        function loadQuestion() {
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionNumberElement.textContent = currentQuestionIndex + 1;
+            questionElement.textContent = currentQuestion.question;
+            optionsElement.innerHTML = "";
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.onclick = () => handleAnswer(option, button);
+                optionsElement.appendChild(button);
+            });
+
+            nextButton.disabled = true;
+            feedbackElement.textContent = "";
+        }
+
+        function handleAnswer(selectedAnswer, selectedButton) {
+            const currentQuestion = quizData[currentQuestionIndex];
+            if (selectedAnswer === currentQuestion.correctAnswer) {
+                score++;
+                selectedButton.style.backgroundColor = "#4CAF50";
+                feedbackElement.textContent = currentQuestion.feedback;
+                feedbackElement.style.color = "green";
+                createConfetti();
+            } else {
+                selectedButton.style.backgroundColor = "#FF6347";
+                feedbackElement.textContent = currentQuestion.feedback;
+                feedbackElement.style.color = "red";
+            }
+
+            const buttons = optionsElement.querySelectorAll("button");
+            buttons.forEach(button => button.disabled = true);
+
+            scoreElement.textContent = `Score: ${score}`;
+            nextButton.disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            updateProgressBar();
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+                nextButton.disabled = true;
+                feedbackElement.textContent = "";
+                confettiContainer.style.display = "none"; // Hide confetti after question change
+            } else {
+                showResult();
+                progressBarContainer.style.display = "none"; // Hide progress bar after quiz finishes
+            }
+        }
+
+        function showResult() {
+            const percentage = ((score / totalQuestions) * 100).toFixed(2);
+            quizContent.innerHTML = `
+                <h2>Your Score: ${score} / ${totalQuestions}</h2>
+                <div class="progress-circle" style="--percentage: ${percentage}%;">
+                    <span class="percentage-text">${percentage}%</span>
+                </div>
+            `;
+            createConfetti();
+        }
+
+        function updateProgressBar() {
+            const progressPercentage = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+            document.getElementById('progress-bar').style.width = progressPercentage + '%';
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>

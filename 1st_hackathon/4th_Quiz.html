@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node.js Challenge</title>
+    <style>
+        body{
+            background-image:url("background.jpeg") ;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            background-size:cover;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .quiz-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        .quiz-header {
+            margin-bottom: 20px;
+        }
+        .quiz-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .question {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        .options button {
+            display: block;
+            width: 100%;
+            background: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .options button:hover {
+            background: #0056b3;
+        }
+        .feedback {
+            margin-top: 20px;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .score {
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+        body, .quiz-container {
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .quiz-container {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .progress-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #4caf50 0%,
+                #4caf50 var(--percentage, 0%),
+                #ccc var(--percentage, 0%) 100%
+            );
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            color: #333;
+            font-weight: bold;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .progress-circle .percentage-text {
+            font-size: 1.4em;
+            color: #ff66cc; /* Mixture of pink and blue */
+            background: linear-gradient(135deg, #ff66cc, #33ccff);
+            -webkit-background-clip: text;
+            background-clip: text; /* Standard */
+            -webkit-text-fill-color: transparent; /* Required for WebKit */
+            color: transparent;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .question-number {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .question {
+            font-weight: bold;
+            font-size: 1.4em;
+        }
+
+        .next-button {
+            background: linear-gradient(135deg, #711044, #017fd2); /* Deep Pink to Blue */
+            color: white;
+            font-size: 1.2em;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 10px 50px rgba(245, 0, 240, 0.3); /* Shadow effect */
+            transition: all 0.3s ease;
+        }
+
+.next-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px rgba(245, 0, 240, 0.3); /* Increased shadow on hover */
+}
+
+.next-button:disabled {
+    background-color: #074575;
+    cursor: not-allowed;
+}
+
+.score {
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+.percentage {
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+.confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw; /* Limit the container width to 100% of viewport width */
+    height: 100vh; /* Limit the container height to 100% of viewport height */
+    pointer-events: none;
+    display: none;
+    overflow: hidden; /* Prevent confetti from overflowing outside the screen */
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #FF5733;
+    animation: confettiAnimation 2s linear infinite;
+}
+
+@keyframes confettiAnimation {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(0.5);
+    }
+    50% {
+        transform: translateY(50vh) rotate(180deg) scale(1.2);
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg) scale(1);
+    }
+}
+
+/* Progress Bar Styles */
+.progress-bar-container {
+    width: 100%;
+    height: 10px;
+    background-color: #ccc;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #4caf50;
+    border-radius: 5px;
+    transition: width 0.3s ease;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+    .quiz-container {
+        padding: 10px;
+    }
+
+    .next-button {
+        width: 100%;
+        font-size: 1em;
+        padding: 10px;
+    }
+
+    .question {
+        font-size: 1.2em;
+    }
+
+    .options button {
+        width: 100%;
+        font-size: 1em;
+        padding: 12px;
+    }
+}
+
+/* Styling for option buttons */
+.options button {
+    background-color: #f4f4f9; /* Light background color */
+    color: #333; /* Text color */
+    font-size: 1.2em;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.3s ease; /* Smooth color change */
+}
+
+.options button:hover {
+    background-color: #4caf50; /* Change to a green background on hover */
+    color: white;
+}
+
+.options button:active {
+    background-color: #017fd2; /* Change to a blue background when clicked */
+}
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>Node.js Challenge</h1>
+        </div>
+        <div id="quiz-content">
+            <p class="question-number">Question <span id="question-number"></span> out of <span id="total-questions"></span></p>
+            <p class="question">Loading question...</p>
+            <div class="options">
+                <!-- Options will be dynamically injected here -->
+            </div>
+            <p class="feedback"></p>
+            <p class="score">Score: 0</p>
+            <button class="next-button" id="next-button" onclick="nextQuestion()" disabled aria-label="Next question">Next</button>
+        </div>
+        <div class="confetti-container" id="confetti-container"></div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar-container" id="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+    {
+        question: "What is Node.js primarily used for?",
+        options: [
+            "Data analysis and machine learning",
+            "Designing graphics and animations",
+            "Developing operating systems",
+            "Building web servers and applications"
+        ],
+        correctAnswer: "Building web servers and applications",
+        feedback: "Node.js is widely used for building scalable and fast web servers and applications using JavaScript."
+    },
+    {
+        question: "Which of the following is a built-in module in Node.js?",
+        options: ["fs", "react", "express", "lodash"],
+        correctAnswer: "fs",
+        feedback: "The `fs` module is a built-in Node.js module used for interacting with the file system."
+    },
+    {
+        question: "What is the purpose of the `require()` function in Node.js?",
+        options: [
+            "Importing external and built-in modules",
+            "Declaring variables",
+            "Handling HTTP requests",
+            "Managing asynchronous operations"
+        ],
+        correctAnswer: "Importing external and built-in modules",
+        feedback: "The `require()` function is used to include external libraries or built-in modules in a Node.js application."
+    },
+    {
+        question: "Which of the following is true about Node.js?",
+        options: [
+            "It is a JavaScript library.",
+            "It runs JavaScript in the browser.",
+            "It is a runtime environment for JavaScript.",
+            "It is only used for front-end development."
+        ],
+        correctAnswer: "It is a runtime environment for JavaScript.",
+        feedback: "Node.js is a runtime environment that allows JavaScript to run outside the browser, typically on servers."
+    },
+    {
+        question: "What does the `npm` tool in Node.js stand for?",
+        options: [ 
+            "Node Package Manager",
+            "Node Program Manager",
+            "Network Programming Module",
+            "New Package Manager"
+        ],
+        correctAnswer: "Node Package Manager",
+        feedback: "`npm` is the Node Package Manager, used to install and manage packages in a Node.js project."
+    },
+    {
+        question: "What is the default scope of variables declared with `var` in Node.js?",
+        options: [
+            "Global scope",
+            "Local to the module",
+            "Function scope",
+            "Block scope"
+        ],
+        correctAnswer: "Function scope",
+        feedback: "Variables declared with `var` have function scope and are not block-scoped."
+    },
+    {
+        question: "What is the purpose of the `EventEmitter` class in Node.js?",
+        options: [
+            "Handle HTTP requests",
+            "Create custom events and listeners",
+            "Perform file I/O operations",
+            "Manage memory usage"
+        ],
+        correctAnswer: "Create custom events and listeners",
+        feedback: "`EventEmitter` is used in Node.js to create, emit, and listen to custom events."
+    },
+    {
+        question: "Which of the following is used to create a server in Node.js?",
+        options: ["os", "fs", "url","http"],
+        correctAnswer: "http",
+        feedback: "The `http` module in Node.js is used to create web servers and handle HTTP requests and responses."
+    },
+    {
+        question: "What is the role of the `process` object in Node.js?",
+        options: [
+            "Manage the event loop",
+            "Provide information about the current Node.js process",
+            "Define HTTP routes",
+            "Access the file system"
+        ],
+        correctAnswer: "Provide information about the current Node.js process",
+        feedback: "The `process` object gives details about the current Node.js process, such as environment variables and arguments."
+    },
+    {
+        question: "How does Node.js handle asynchronous operations?",
+        options: [
+            "Through promises and async/await",
+            "By blocking the event loop",
+            "Using threads for each operation",
+            "Via synchronous callbacks"
+        ],
+        correctAnswer: "Through promises and async/await",
+        feedback: "Node.js supports asynchronous operations using promises and async/await to prevent blocking the event loop."
+    }
+];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let totalQuestions = quizData.length;
+
+        const quizContent = document.getElementById("quiz-content");
+        const questionElement = document.querySelector(".question");
+        const optionsElement = document.querySelector(".options");
+        const feedbackElement = document.querySelector(".feedback");
+        const scoreElement = document.querySelector(".score");
+        const questionNumberElement = document.getElementById("question-number");
+        const totalQuestionsElement = document.getElementById("total-questions");
+        const nextButton = document.getElementById("next-button");
+        const confettiContainer = document.getElementById("confetti-container");
+        const progressBarContainer = document.getElementById("progress-bar-container");
+
+        totalQuestionsElement.textContent = totalQuestions;
+
+        const confettiColors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A6", "#FFDA33", "#33FFF5"];
+
+        function createConfetti() {
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement("div");
+                confetti.classList.add("confetti");
+                confetti.style.left = Math.random() * 100 + "vw";
+                confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                confetti.style.animationDuration = Math.random() * 2 + 1 + "s";
+                confettiContainer.appendChild(confetti);
+
+                setTimeout(() => confetti.remove(), 2000); // Remove after animation
+            }
+            confettiContainer.style.display = "block"; // Show confetti when triggered
+        }
+
+        function loadQuestion() {
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionNumberElement.textContent = currentQuestionIndex + 1;
+            questionElement.textContent = currentQuestion.question;
+            optionsElement.innerHTML = "";
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.onclick = () => handleAnswer(option, button);
+                optionsElement.appendChild(button);
+            });
+
+            nextButton.disabled = true;
+            feedbackElement.textContent = "";
+        }
+
+        function handleAnswer(selectedAnswer, selectedButton) {
+            const currentQuestion = quizData[currentQuestionIndex];
+            if (selectedAnswer === currentQuestion.correctAnswer) {
+                score++;
+                selectedButton.style.backgroundColor = "#4CAF50";
+                feedbackElement.textContent = currentQuestion.feedback;
+                feedbackElement.style.color = "green";
+                createConfetti();
+            } else {
+                selectedButton.style.backgroundColor = "#FF6347";
+                feedbackElement.textContent = currentQuestion.feedback;
+                feedbackElement.style.color = "red";
+            }
+
+            const buttons = optionsElement.querySelectorAll("button");
+            buttons.forEach(button => button.disabled = true);
+
+            scoreElement.textContent = `Score: ${score}`;
+            nextButton.disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            updateProgressBar();
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+                nextButton.disabled = true;
+                feedbackElement.textContent = "";
+                confettiContainer.style.display = "none"; // Hide confetti after question change
+            } else {
+                showResult();
+                progressBarContainer.style.display = "none"; // Hide progress bar after quiz finishes
+            }
+        }
+
+        function showResult() {
+            const percentage = ((score / totalQuestions) * 100).toFixed(2);
+            quizContent.innerHTML = `
+                <h2>Your Score: ${score} / ${totalQuestions}</h2>
+                <div class="progress-circle" style="--percentage: ${percentage}%;">
+                    <span class="percentage-text">${percentage}%</span>
+                </div>
+            `;
+            createConfetti();
+        }
+
+        function updateProgressBar() {
+            const progressPercentage = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+            document.getElementById('progress-bar').style.width = progressPercentage + '%';
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
