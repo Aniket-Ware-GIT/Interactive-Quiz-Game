@@ -1,0 +1,115 @@
+body{
+    background-image:url("first_page.jpeg") ;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size:cover;
+    font-family:'papyrus','Courier New', Courier, monospace;
+    background-color: #127c7e;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    overflow: hidden;
+}
+.container {
+    position: relative;
+    text-align: center;
+}
+.header {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+/* The container for the rotating icons */
+.quiz-icons-container {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    margin: 0 auto;
+    overflow: hidden;
+    perspective: 1000px;
+}
+ /* 3D scrolling setup */
+.icons-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: nowrap;
+    animation: rotateIcons 15s infinite linear;
+    transform-style: preserve-3d;
+}
+ /* 3D scroll effect */
+.quiz-icon {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    transform: rotateY(0deg) translateZ(150px);
+}
+.quiz-icon img {
+    width: 60px;
+    height: 60px;
+}
+
+.quiz-icon p {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #333;
+}
+
+/* Hover effect to enlarge icons */
+.quiz-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+/* 3D rotating effect for the scrollable icons */
+@keyframes rotateIcons {
+    0% {
+        transform: rotateY(0deg);
+    }
+    100% {
+        transform: rotateY(360deg);
+    }
+        }
+/*.container {
+    background:rgba(38, 77, 97, 0.5);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+.container h1 {
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+.container button {
+    background: linear-gradient(45deg, #38079bce, #1e4c61);
+    color: #fff;
+    border:none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 0 0 15px rgba(132, 52, 92, 0.5), 0 0 30px rgba(53, 93, 113, 0.5);
+    transition: all 0.3s ease-in-out;
+}
+.container button:hover {
+    box-shadow: 0 0 30px rgb(244, 85, 164), 0 0 50px rgb(130, 211, 255);
+    transform: scale(1.1);
+}*/
+    

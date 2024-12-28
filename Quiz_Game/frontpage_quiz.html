@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #D2D2D2;
+            background-image:url("bg.jpg") ;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            background-size:cover;
+        }
+
+        .banner {
+            width: 100%;
+            height: 100vh;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .banner .slider {
+            position: absolute;
+            transform-style: preserve-3d;
+            transform: perspective(1500px); 
+            display: flex;
+            transition: transform 0.5s ease; 
+            z-index: 3;
+        }
+
+        .banner .slider .item {
+            position: absolute;
+            width: 150px; 
+            height: 200px;
+            flex-shrink: 0;
+            margin: 0 10px;
+            transform: 
+                rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) 
+                translateZ(350px);
+        }
+
+        .banner .slider .item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
+        }
+
+        .arrow {
+            position: absolute;
+            top: 60%;
+            transform: translateY(-50%);
+            font-size: 2em;
+            color: #25283b;
+            background: rgba(255, 255, 255, 0.7);
+            border:none;
+            cursor: pointer;
+            z-index: 5;
+            padding: 10px;
+            border-radius: 50%;
+        }
+
+        .arrow.left {
+            left: 245px;
+        }
+
+        .arrow.right {
+            right: 245px;
+        }
+
+        .banner .content {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            z-index: 1;
+            top: 120px;
+            text-align: center;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 3rem;
+            margin: 0;
+        }
+
+        @media screen and (max-width: 1023px) {
+            .banner .slider {
+                width: 160px;
+                height: 200px;
+                left: calc(50% - 80px);
+            }
+        }
+
+        @media screen and (max-width: 767px) {
+            .banner .slider {
+                width: 100px;
+                height: 150px;
+                left: calc(50% - 50px);
+            }
+        }
+
+        .footer-text {
+            font-family: 'Courier New', Courier, monospace;
+            text-align:left;
+            font-size: 1rem;
+            margin-top: -20px;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="banner">
+        <div class="slider" style="--quantity: 10;">
+            <div class="item" style="--position: 1">
+                <a href="1st_Quiz.html"><img src="python_logo.png" alt="1"></a></div>
+            <div class="item" style="--position: 2">
+                <a href="2nd_Quiz.html"><img src="c_logo.png" alt="2"></a></div>
+            <div class="item" style="--position: 3">
+                <a href="3rd_Quiz.html"><img src="c++_logo.png" alt="3"></a></div>
+            <div class="item" style="--position: 4">
+                <a href="4th_Quiz.html"><img src="nodejs_logo.png" alt="4"></a></div>
+            <div class="item" style="--position: 5">
+                <a href="5th_Quiz.html"><img src="html_logo.png" alt="5"></a></div>
+            <div class="item" style="--position: 6">
+                <a href="6th_Quiz.html"><img src="css_logo.png" alt="6"></a></div>
+            <div class="item" style="--position: 7">
+                <a href="7th_Quiz.html"><img src="JavaScript_logo.png" alt="7"></a></div>
+            <div class="item" style="--position: 8">
+                <a href="8th_Quiz.html"><img src="java_logo.jpg" alt="8"></a></div>
+            <div class="item" style="--position: 9">
+                <a href="9th_Quiz.html"><img src="react_logo.png" alt="9"></a></div>
+            <div class="item" style="--position: 10">
+                <a href="10th_Quiz.html"><img src="sql_logo.jpg" alt="10"></a></div>
+        </div>
+
+        <button class="arrow left" id="leftArrow">←</button>
+        <button class="arrow right" id="rightArrow">→</button>
+
+        <div class="content" style="color: rgb(0, 0, 0);">
+            <h2 class="quiz-heading">Take a Quiz!</h2>
+        </div>
+    </div>
+        <div class="footer-text">
+           <p>Click on the image to take a quiz</p>
+        </div>
+
+    <script>
+        const slider = document.querySelector('.banner .slider');
+        const leftArrow = document.getElementById('leftArrow');
+        const rightArrow = document.getElementById('rightArrow');
+
+        let currentIndex = 0;
+        const items = document.querySelectorAll('.banner .slider .item');
+        const totalItems = items.length;
+
+        function moveSlider() {
+            const angle = currentIndex * (360 / totalItems);
+            slider.style.transform = `perspective(1500px) rotateY(-${angle}deg)`; 
+        }
+
+        leftArrow.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+            } else {
+                currentIndex = totalItems - 1;
+            }
+            moveSlider();
+        });
+
+        rightArrow.addEventListener('click', () => {
+            if (currentIndex < totalItems - 1) {
+                currentIndex++;
+            } else {
+                currentIndex = 0;
+            }
+            moveSlider();
+        });
+    </script>
+</body>
+</html>
